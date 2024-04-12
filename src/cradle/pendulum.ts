@@ -11,7 +11,10 @@ type PendulumOptions = {
 
 export class Pendulum {
   public readonly scene = new THREE.Scene();
-  private ballMesh: THREE.Mesh<THREE.SphereGeometry, THREE.MeshNormalMaterial>;
+  private ballMesh: THREE.Mesh<
+    THREE.SphereGeometry,
+    THREE.MeshStandardMaterial
+  >;
   private ballRigidBody: RAPIER.RigidBody;
   private fulcrumRigidBody: RAPIER.RigidBody;
   private lineMesh: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial>;
@@ -65,12 +68,18 @@ export class Pendulum {
 
     this.ballMesh = new THREE.Mesh(
       new THREE.SphereGeometry(radius, 16, 16),
-      new THREE.MeshNormalMaterial(),
+      new THREE.MeshStandardMaterial({
+        color: 0xff0000,
+        roughness: 0.15,
+        metalness: 0.5,
+      }),
     );
     this.scene.add(this.ballMesh);
+    this.ballMesh.castShadow = true;
+    this.ballMesh.receiveShadow = true;
 
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0xff0000,
+      color: 0x666666,
     });
     this.points = [
       new THREE.Vector3().copy(fulcrumRigidBody.translation()),
@@ -79,6 +88,7 @@ export class Pendulum {
     const geometry = new THREE.BufferGeometry().setFromPoints(this.points);
     this.lineMesh = new THREE.Line(geometry, lineMaterial);
     this.scene.add(this.lineMesh);
+    this.lineMesh.castShadow = true;
   }
 
   public applyImpulse(impulse: number) {

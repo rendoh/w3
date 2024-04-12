@@ -14,7 +14,7 @@ class Renderer {
     this.initCanvas();
     this.controls.enableDamping = true;
     this.controls.maxDistance = 15;
-    this.controls.minDistance = 7.5;
+    this.controls.minDistance = 2;
     this.controls.enablePan = false;
     this.controls.maxPolarAngle = Math.PI * (3 / 4);
     this.controls.minPolarAngle = Math.PI / 4;
@@ -22,6 +22,8 @@ class Renderer {
     this.controls.minAzimuthAngle = -Math.PI / 2;
 
     this.resize();
+
+    this.renderer.shadowMap.enabled = true;
   }
 
   private initCanvas() {

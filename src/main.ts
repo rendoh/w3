@@ -15,5 +15,6 @@ function update() {
   renderer.update();
 }
 
+renderer.scene.add(app.scene);
 sizes.addEventListener('resize', resize);
 clock.addEventListener('tick', update);

@@ -19,7 +19,7 @@ export class Cradle {
     this.pendulumns = [...range(0, count)].map((i) => {
       const x = i * radius * 2 - radius * (count - 1);
       const pendulum = new Pendulum({
-        radius: radius * 0.95,
+        radius: radius - Math.max(radius * 0.02, 0.009),
         position: { x, y: 0, z: 0 },
         length,
       });

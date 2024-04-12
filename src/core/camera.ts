@@ -16,7 +16,7 @@ class Camera {
       this.calcFov(),
       sizes.width / sizes.height,
       0.1,
-      distance * 2,
+      distance * 3,
     );
     camera.position.z = distance;
     return camera;
