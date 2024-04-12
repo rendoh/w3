@@ -11,8 +11,11 @@ type PendulumOptions = {
 
 export class Pendulum {
   public readonly scene = new THREE.Scene();
-  private mesh: THREE.Mesh<THREE.SphereGeometry, THREE.MeshNormalMaterial>;
+  private ballMesh: THREE.Mesh<THREE.SphereGeometry, THREE.MeshNormalMaterial>;
   private ballRigidBody: RAPIER.RigidBody;
+  private fulcrumRigidBody: RAPIER.RigidBody;
+  private lineMesh: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial>;
+  private points: [THREE.Vector3, THREE.Vector3];
 
   constructor({
     position = { x: 0, y: 0, z: 0 },
@@ -58,12 +61,24 @@ export class Pendulum {
     );
 
     this.ballRigidBody = ballRigidBody;
+    this.fulcrumRigidBody = fulcrumRigidBody;
 
-    this.mesh = new THREE.Mesh(
+    this.ballMesh = new THREE.Mesh(
       new THREE.SphereGeometry(radius, 16, 16),
       new THREE.MeshNormalMaterial(),
     );
-    this.scene.add(this.mesh);
+    this.scene.add(this.ballMesh);
+
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: 0xff0000,
+    });
+    this.points = [
+      new THREE.Vector3().copy(fulcrumRigidBody.translation()),
+      new THREE.Vector3().copy(ballRigidBody.translation()),
+    ];
+    const geometry = new THREE.BufferGeometry().setFromPoints(this.points);
+    this.lineMesh = new THREE.Line(geometry, lineMaterial);
+    this.scene.add(this.lineMesh);
   }
 
   public applyImpulse(impulse: number) {
@@ -78,18 +93,23 @@ export class Pendulum {
   }
 
   public update() {
-    this.mesh.position.copy(this.ballRigidBody.translation());
-    this.mesh.quaternion.copy(this.ballRigidBody.rotation());
+    const position = this.ballRigidBody.translation();
+    this.ballMesh.position.copy(position);
+    this.points[1].copy(position);
+    this.lineMesh.geometry.setFromPoints(this.points);
   }
 
   public dispose() {
-    this.mesh.material.dispose();
-    this.mesh.geometry.dispose();
+    this.ballMesh.material.dispose();
+    this.ballMesh.geometry.dispose();
+    this.lineMesh.material.dispose();
+    this.lineMesh.geometry.dispose();
 
     /**
      * > This will remove this rigid-body as well as all its attached colliders and joints. Every other bodies touching or attached by joints to this rigid-body will be woken-up.
      * ということなので、ColliderとJointも一緒に削除されると思われる
      */
     world.world.removeRigidBody(this.ballRigidBody);
+    world.world.removeRigidBody(this.fulcrumRigidBody);
   }
 }
