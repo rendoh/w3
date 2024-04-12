@@ -34,7 +34,7 @@ impulseFolder.add(params.impulse, 'count', 1, 10, 1);
 impulseFolder.add(params.impulse, 'apply');
 
 const resetFolder = gui.addFolder('Reset');
-resetFolder.add(params.reset, 'radius', 0, 1);
+resetFolder.add(params.reset, 'radius', 0.1, 1);
 resetFolder.add(params.reset, 'length', 0.1, 10);
 resetFolder.add(params.reset, 'count', 1, 10, 1);
 resetFolder.add(params.reset, 'reset');
