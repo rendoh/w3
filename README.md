@@ -9,3 +9,7 @@ Rapierを試す
 - RaycastVehicleとは？: cannonにある車両がより車両らしく走行できるような物理演算クラス(よりシンプルなRigidVehicleというものもある)
 - Rapierにはそういったものは少なくともESModule版にはないが、[A Raycast Vehicle for use with rapier. Based on the cannon-es RaycastVehicle implementation](https://github.com/isaac-mason/sketches/tree/main/src/sketches/rapier/custom-raycast-vehicle)として作っている人がいる
 - https://sketches.isaacmason.com/sketch/intro
+- @dimforge/rapier3d@0.12.0はViteでサンプル通り実装しビルドするとエラーで動かない
+- devでは問題なし
+- @dimforge/rapier3d@0.11.2では問題なし
+- 該当のissue: https://github.com/dimforge/rapier.js/issues/257
