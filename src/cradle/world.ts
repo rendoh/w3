@@ -1,4 +1,4 @@
-import RAPIER from '@dimforge/rapier3d';
+import RAPIER from '@dimforge/rapier3d-compat';
 
 import { clock } from '../core/clock';
 
@@ -19,4 +19,5 @@ class World {
   }
 }
 
+await RAPIER.init();
 export const world = new World();
