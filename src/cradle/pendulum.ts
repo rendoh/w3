@@ -60,7 +60,7 @@ export class Pendulum {
     this.ballRigidBody = ballRigidBody;
 
     this.mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(radius, 32, 32),
+      new THREE.SphereGeometry(radius, 16, 16),
       new THREE.MeshNormalMaterial(),
     );
     this.scene.add(this.mesh);
@@ -69,7 +69,7 @@ export class Pendulum {
   public applyImpulse(impulse: number) {
     this.ballRigidBody.applyImpulse(
       {
-        x: impulse,
+        x: impulse * this.ballRigidBody.mass(),
         y: 0,
         z: 0,
       },

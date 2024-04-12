@@ -32,10 +32,6 @@ class App {
   public update() {
     this.cradle?.update();
   }
-
-  // public applyImpulse(impulse: number, count: number) {
-  //   this.cradle?.applyImpulse(impulse, count);
-  // }
 }
 
 export const app = new App();
