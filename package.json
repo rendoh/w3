@@ -23,7 +23,7 @@
     "vite-plugin-top-level-await": "^1.4.1"
   },
   "dependencies": {
-    "@dimforge/rapier3d-compat": "^0.12.0",
+    "@dimforge/rapier3d-compat": "^0.11.2",
     "lil-gui": "^0.19.1",
     "the-new-css-reset": "^1.11.2",
     "three": "^0.161.0",

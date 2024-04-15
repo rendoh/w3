@@ -15,3 +15,4 @@ Rapierを試す
 - 該当のissue: https://github.com/dimforge/rapier.js/issues/257
 - @dimforge/rapier3d-compat@0.12.0は0.12系でも問題なし
   - ESM integration ではなくなるので `vite-plugin-wasm` は不要
+- Contact Force Eventの振る舞いにバグがある様子: https://github.com/dimforge/rapier.js/issues/261

@@ -31,8 +31,12 @@ export class Cradle {
       'collision',
       (event) => {
         this.pendulumns
-          .filter((pendulum) => event.detail.includes(pendulum.collider))
-          .forEach((pendulum) => pendulum.playCollisionSound());
+          .filter((pendulum) =>
+            event.detail.colliders.includes(pendulum.collider),
+          )
+          .forEach((pendulum) =>
+            pendulum.playCollisionSound(event.detail.force),
+          );
       },
       {
         signal: this.abortController.signal,

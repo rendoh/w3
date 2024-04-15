@@ -7,7 +7,10 @@ await RAPIER.init();
 const eventQueue = new RAPIER.EventQueue(true);
 
 interface WorldEventMap {
-  collision: CustomEvent<[RAPIER.Collider, RAPIER.Collider]>;
+  collision: CustomEvent<{
+    colliders: [RAPIER.Collider, RAPIER.Collider];
+    force: number;
+  }>;
 }
 
 class World extends TypedEventTarget<WorldEventMap> {
@@ -25,18 +28,19 @@ class World extends TypedEventTarget<WorldEventMap> {
   public update() {
     this.world.timestep = clock.delta / 1000;
     this.world.step(eventQueue);
-    eventQueue.drainCollisionEvents((handle1, handle2, started) => {
-      if (started) {
-        this.dispatchTypedEvent(
-          'collision',
-          new CustomEvent('collision', {
-            detail: [
-              this.world.getCollider(handle1),
-              this.world.getCollider(handle2),
+    eventQueue.drainContactForceEvents((e) => {
+      this.dispatchTypedEvent(
+        'collision',
+        new CustomEvent('collision', {
+          detail: {
+            colliders: [
+              this.world.getCollider(e.collider1()),
+              this.world.getCollider(e.collider2()),
             ],
-          }),
-        );
-      }
+            force: e.totalForceMagnitude(),
+          },
+        }),
+      );
     });
   }
 }

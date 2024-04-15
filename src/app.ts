@@ -5,6 +5,7 @@ import { params } from './gui';
 
 class App {
   public readonly scene = new THREE.Scene();
+  private directionalLightCameraHelper?: THREE.CameraHelper;
   cradle?: Cradle;
   constructor() {
     this.resetCradle();
@@ -49,10 +50,10 @@ class App {
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 15;
 
-    directionalLight.shadow.camera.top = 7;
-    directionalLight.shadow.camera.right = 7;
-    directionalLight.shadow.camera.bottom = -7;
-    directionalLight.shadow.camera.left = -7;
+    directionalLight.shadow.camera.top = 6;
+    directionalLight.shadow.camera.right = 6;
+    directionalLight.shadow.camera.bottom = -6;
+    directionalLight.shadow.camera.left = -6;
 
     directionalLight.shadow.mapSize.width = 2 ** 10;
     directionalLight.shadow.mapSize.height = 2 ** 10;
@@ -61,7 +62,7 @@ class App {
       directionalLight.shadow.camera,
     );
     this.scene.add(directionalLightCameraHelper);
-    directionalLightCameraHelper.visible = false;
+    this.directionalLightCameraHelper = directionalLightCameraHelper;
   }
 
   private resetCradle() {
@@ -79,6 +80,10 @@ class App {
 
   public update() {
     this.cradle?.update();
+    if (this.directionalLightCameraHelper) {
+      this.directionalLightCameraHelper.visible =
+        params.helpers.directionalLightCameraHelper;
+    }
   }
 }
 

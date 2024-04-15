@@ -50,8 +50,8 @@ export class Pendulum {
 
     collider.setRestitution(1);
     collider.setFriction(0);
-    collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS);
-    collider.setContactForceEventThreshold(2);
+    collider.setActiveEvents(RAPIER.ActiveEvents.CONTACT_FORCE_EVENTS);
+    // collider.setContactForceEventThreshold(0.1);
 
     // ジョイント
     world.world.createImpulseJoint(
@@ -132,10 +132,11 @@ export class Pendulum {
     world.world.removeRigidBody(this.ballRigidBody);
     world.world.removeRigidBody(this.fulcrumRigidBody);
   }
-
-  public playCollisionSound() {
+  public playCollisionSound(force: number) {
+    const v = force / this.ballRigidBody.mass();
     if (!params.sound.enabled) return;
     this.audio.currentTime = 0;
+    this.audio.volume = Math.min(v / 400, 1);
     this.audio.play();
   }
 }
