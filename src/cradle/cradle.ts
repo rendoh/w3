@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import { range } from '../utils';
-import { Pendulum } from './pendulum';
+import { HologramPendulum as Pendulum } from './hologram-pendulum';
 import { world } from './world';
 
 type CradleOptions = {
