@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { sizes } from './sizes';
 
-const distance = 10;
+const distance = 5;
 
 class Camera {
   public readonly camera: THREE.PerspectiveCamera;
@@ -25,7 +25,7 @@ class Camera {
   private calcFov() {
     const { height } = sizes;
     const halfHeight = height / 2;
-    const aspectRatio = halfHeight / (distance * 100);
+    const aspectRatio = halfHeight / 1000;
     const angle = Math.atan(aspectRatio);
     const fovAsRadian = angle * 2;
     const fovAsDegree = fovAsRadian * (180 / Math.PI);

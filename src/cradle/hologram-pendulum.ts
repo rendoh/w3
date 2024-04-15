@@ -1,8 +1,12 @@
 import RAPIER from '@dimforge/rapier3d-compat';
 import * as THREE from 'three';
 
+import { clock } from '../core/clock';
 import { params } from '../gui';
+import { beta, lerp } from '../utils';
 import collisionSound from './collision.mp3?url';
+import fragmentShader from './hologram-pendulum.fs';
+import vertexShader from './hologram-pendulum.vs';
 import { world } from './world';
 
 type HologramPendulumOptions = {
@@ -13,10 +17,7 @@ type HologramPendulumOptions = {
 
 export class HologramPendulum {
   public readonly scene = new THREE.Scene();
-  private ballMesh: THREE.Mesh<
-    THREE.SphereGeometry,
-    THREE.MeshStandardMaterial
-  >;
+  private ballMesh: THREE.Mesh<THREE.SphereGeometry, THREE.RawShaderMaterial>;
   private ballRigidBody: RAPIER.RigidBody;
   private fulcrumRigidBody: RAPIER.RigidBody;
   private lineMesh: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial>;
@@ -75,15 +76,22 @@ export class HologramPendulum {
 
     this.ballMesh = new THREE.Mesh(
       new THREE.SphereGeometry(radius, 16, 16),
-      new THREE.MeshStandardMaterial({
-        color: 0xff0000,
-        roughness: 0.15,
-        metalness: 0.5,
+      new THREE.RawShaderMaterial({
+        vertexShader,
+        fragmentShader,
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: {
+          uTime: { value: clock.elapsed },
+          uGlitchStrength: { value: 0 },
+        },
       }),
     );
     this.scene.add(this.ballMesh);
     this.ballMesh.castShadow = true;
-    this.ballMesh.receiveShadow = true;
+    // this.ballMesh.receiveShadow = true;
 
     const lineMaterial = new THREE.LineBasicMaterial({
       color: 0x666666,
@@ -117,6 +125,13 @@ export class HologramPendulum {
     this.ballMesh.quaternion.copy(this.ballRigidBody.rotation());
     this.points[1].copy(position);
     this.lineMesh.geometry.setFromPoints(this.points);
+    this.ballMesh.material.uniforms.uTime.value = clock.elapsed;
+
+    this.ballMesh.material.uniforms.uGlitchStrength.value = lerp(
+      this.ballMesh.material.uniforms.uGlitchStrength.value,
+      0,
+      beta(0.1, clock.delta),
+    );
   }
 
   public dispose() {
@@ -134,9 +149,11 @@ export class HologramPendulum {
   }
   public playCollisionSound(force: number) {
     const v = force / this.ballRigidBody.mass();
+    const strength = Math.min(v / 400, 1);
+    this.ballMesh.material.uniforms.uGlitchStrength.value = strength;
     if (!params.sound.enabled) return;
     this.audio.currentTime = 0;
-    this.audio.volume = Math.min(v / 400, 1);
+    this.audio.volume = strength;
     this.audio.play();
   }
 }
