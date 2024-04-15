@@ -26,6 +26,18 @@ export class Cradle {
       this.scene.add(pendulum.scene);
       return pendulum;
     });
+
+    world.addEventListener(
+      'collision',
+      (event) => {
+        this.pendulumns
+          .filter((pendulum) => event.detail.includes(pendulum.collider))
+          .forEach((pendulum) => pendulum.playCollisionSound());
+      },
+      {
+        signal: this.abortController.signal,
+      },
+    );
   }
 
   public applyImpulse(impulse: number, count: number) {

@@ -7,6 +7,9 @@ interface ParamsEventMap {
 }
 
 class Params extends TypedEventTarget<ParamsEventMap> {
+  sound = {
+    enabled: false,
+  };
   impulse = {
     strength: 3,
     count: 1,
@@ -27,6 +30,8 @@ class Params extends TypedEventTarget<ParamsEventMap> {
 export const params = new Params();
 
 const gui = new GUI();
+
+gui.add(params.sound, 'enabled');
 
 const impulseFolder = gui.addFolder('Impulse');
 impulseFolder.add(params.impulse, 'strength', 0, 5);

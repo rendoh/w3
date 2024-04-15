@@ -1,6 +1,8 @@
 import RAPIER from '@dimforge/rapier3d-compat';
 import * as THREE from 'three';
 
+import { params } from '../gui';
+import collisionSound from './collision.mp3?url';
 import { world } from './world';
 
 type PendulumOptions = {
@@ -19,6 +21,8 @@ export class Pendulum {
   private fulcrumRigidBody: RAPIER.RigidBody;
   private lineMesh: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial>;
   private points: [THREE.Vector3, THREE.Vector3];
+  private audio = new Audio(collisionSound);
+  public readonly collider: RAPIER.Collider;
 
   constructor({
     position = { x: 0, y: 0, z: 0 },
@@ -46,6 +50,8 @@ export class Pendulum {
 
     collider.setRestitution(1);
     collider.setFriction(0);
+    collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS);
+    collider.setContactForceEventThreshold(2);
 
     // ジョイント
     world.world.createImpulseJoint(
@@ -63,6 +69,7 @@ export class Pendulum {
       true,
     );
 
+    this.collider = collider;
     this.ballRigidBody = ballRigidBody;
     this.fulcrumRigidBody = fulcrumRigidBody;
 
@@ -89,6 +96,8 @@ export class Pendulum {
     this.lineMesh = new THREE.Line(geometry, lineMaterial);
     this.scene.add(this.lineMesh);
     this.lineMesh.castShadow = true;
+
+    this.audio.volume = 0.1;
   }
 
   public applyImpulse(impulse: number) {
@@ -105,6 +114,7 @@ export class Pendulum {
   public update() {
     const position = this.ballRigidBody.translation();
     this.ballMesh.position.copy(position);
+    this.ballMesh.quaternion.copy(this.ballRigidBody.rotation());
     this.points[1].copy(position);
     this.lineMesh.geometry.setFromPoints(this.points);
   }
@@ -121,5 +131,11 @@ export class Pendulum {
      */
     world.world.removeRigidBody(this.ballRigidBody);
     world.world.removeRigidBody(this.fulcrumRigidBody);
+  }
+
+  public playCollisionSound() {
+    if (!params.sound.enabled) return;
+    this.audio.currentTime = 0;
+    this.audio.play();
   }
 }
