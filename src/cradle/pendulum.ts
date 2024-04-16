@@ -80,6 +80,8 @@ export class Pendulum {
     this.ballMesh.castShadow = true;
     this.ballMesh.receiveShadow = this.pendulumMaterial.receiveShadow;
 
+    this.ballMesh.customDepthMaterial = this.pendulumMaterial.depthMaterial;
+
     const lineMaterial = new THREE.LineBasicMaterial({
       color: 0x666666,
     });

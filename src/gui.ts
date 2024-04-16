@@ -43,7 +43,7 @@ impulseFolder.add(params.impulse, 'count', 1, 7, 1);
 impulseFolder.add(params.impulse, 'apply');
 
 const resetFolder = gui.addFolder('Reset');
-resetFolder.add(params.reset, 'type', ['metallic', 'hologram']);
+resetFolder.add(params.reset, 'type', ['hologram', 'metallic']);
 resetFolder.add(params.reset, 'radius', 0.1, 0.75);
 resetFolder.add(params.reset, 'length', 0.5, 2.5);
 resetFolder.add(params.reset, 'count', 1, 7, 1);
