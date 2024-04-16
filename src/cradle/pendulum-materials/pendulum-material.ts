@@ -5,6 +5,7 @@ export interface PendulumMaterial {
   readonly audio: HTMLAudioElement;
   readonly receiveShadow: boolean;
   readonly depthMaterial?: THREE.Material;
+  readonly lineMaterial: THREE.LineBasicMaterial;
   onContact(strength: number): void;
   update(): void;
   dispose(): void;

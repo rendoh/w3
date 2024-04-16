@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import { clock } from '../../core/clock';
+import { params } from '../../gui';
 import { beta, lerp } from '../../utils';
 import hologramSound from './hologram.mp3?url';
 import fragmentShader from './hologram-pendulum.fs';
@@ -13,6 +14,11 @@ export class HologramPendulumMaterial implements PendulumMaterial {
   public readonly audio = new Audio(hologramSound);
   public readonly receiveShadow = false;
   public readonly depthMaterial: THREE.RawShaderMaterial;
+  public readonly lineMaterial = new THREE.LineBasicMaterial({
+    color: 0x3fe5bf,
+    transparent: true,
+    opacity: 0.5,
+  });
 
   constructor() {
     this.material = new THREE.RawShaderMaterial({
@@ -25,6 +31,8 @@ export class HologramPendulumMaterial implements PendulumMaterial {
       uniforms: {
         uTime: { value: clock.elapsed },
         uGlitchStrength: { value: 0 },
+        uFrequency: { value: params.hologram.frequency },
+        uSpeed: { value: params.hologram.speed },
       },
     });
     this.depthMaterial = new THREE.RawShaderMaterial({
@@ -36,12 +44,13 @@ export class HologramPendulumMaterial implements PendulumMaterial {
 
   public update() {
     this.material.uniforms.uTime.value = clock.elapsed;
-
     this.material.uniforms.uGlitchStrength.value = lerp(
       this.material.uniforms.uGlitchStrength.value,
       0,
       beta(0.1, clock.delta),
     );
+    this.material.uniforms.uFrequency.value = params.hologram.frequency;
+    this.material.uniforms.uSpeed.value = params.hologram.speed;
   }
 
   public onContact(strength: number) {
@@ -51,5 +60,6 @@ export class HologramPendulumMaterial implements PendulumMaterial {
   public dispose() {
     this.material.dispose();
     this.depthMaterial.dispose();
+    this.lineMaterial.dispose();
   }
 }

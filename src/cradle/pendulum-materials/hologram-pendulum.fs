@@ -2,6 +2,8 @@ precision highp float;
 
 uniform float uTime;
 uniform vec3 cameraPosition;
+uniform float uFrequency;
+uniform float uSpeed;
 
 varying vec3 vPosition;
 varying vec3 vNormal;
@@ -12,7 +14,7 @@ void main() {
         normal *= -1.;
     }
 
-    float stripes = mod(vPosition.y * 30. - uTime * .001, 1.);
+    float stripes = mod(vPosition.y * uFrequency - uTime * .01 * uSpeed, 1.);
     stripes = pow(stripes, 3.);
 
     vec3 viewDirection = normalize(vPosition - cameraPosition);

@@ -82,15 +82,15 @@ export class Pendulum {
 
     this.ballMesh.customDepthMaterial = this.pendulumMaterial.depthMaterial;
 
-    const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x666666,
-    });
     this.points = [
       new THREE.Vector3().copy(fulcrumRigidBody.translation()),
       new THREE.Vector3().copy(ballRigidBody.translation()),
     ];
     const geometry = new THREE.BufferGeometry().setFromPoints(this.points);
-    this.lineMesh = new THREE.Line(geometry, lineMaterial);
+    this.lineMesh = new THREE.Line(
+      geometry,
+      this.pendulumMaterial.lineMaterial,
+    );
     this.scene.add(this.lineMesh);
     this.lineMesh.castShadow = true;
   }
@@ -118,7 +118,6 @@ export class Pendulum {
   public dispose() {
     this.pendulumMaterial.dispose();
     this.ballMesh.geometry.dispose();
-    this.lineMesh.material.dispose();
     this.lineMesh.geometry.dispose();
 
     /**
