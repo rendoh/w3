@@ -71,13 +71,14 @@ const helpersFolder = gui.addFolder('Helpers');
 helpersFolder.add(params.helpers, 'directionalLightCameraHelper');
 
 function toggleMaterialFolders(type: string) {
-  Object.entries({
+  const typeFolders: Record<string, GUI[]> = {
     hologram: [hologramFolder],
     metallic: [metallicFolder],
     random: [hologramFolder, metallicFolder],
-  }).forEach(([key, folders]) => {
-    folders.forEach((folder) => folder[type === key ? 'show' : 'hide']());
-  });
+  };
+  [hologramFolder, metallicFolder].forEach((folder) =>
+    typeFolders[type].includes(folder) ? folder.show() : folder.hide(),
+  );
 }
 
 toggleMaterialFolders(params.reset.type);
