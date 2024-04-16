@@ -52,7 +52,7 @@ impulseFolder.add(params.impulse, 'apply');
 
 const resetFolder = gui.addFolder('Reset');
 resetFolder
-  .add(params.reset, 'type', ['hologram', 'metallic'])
+  .add(params.reset, 'type', ['hologram', 'metallic', 'random'])
   .onChange(toggleMaterialFolders);
 resetFolder.add(params.reset, 'radius', 0.1, 0.75);
 resetFolder.add(params.reset, 'length', 0.5, 2.5);
@@ -72,10 +72,11 @@ helpersFolder.add(params.helpers, 'directionalLightCameraHelper');
 
 function toggleMaterialFolders(type: string) {
   Object.entries({
-    hologram: hologramFolder,
-    metallic: metallicFolder,
-  }).forEach(([key, folder]) => {
-    folder[type === key ? 'show' : 'hide']();
+    hologram: [hologramFolder],
+    metallic: [metallicFolder],
+    random: [hologramFolder, metallicFolder],
+  }).forEach(([key, folders]) => {
+    folders.forEach((folder) => folder[type === key ? 'show' : 'hide']());
   });
 }
 

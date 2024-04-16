@@ -21,16 +21,25 @@ export class Cradle {
   constructor({ radius, length, count }: CradleOptions) {
     this.pendulumns = [...range(0, count)].map((i) => {
       const x = i * radius * 2 - radius * (count - 1);
-      const pendulum = new Pendulum(
-        params.reset.type === 'metallic'
-          ? new MetallicPendulumMaterial()
-          : new HologramPendulumMaterial(),
-        {
-          radius: radius - Math.max(radius * 0.02, 0.009),
-          position: { x, y: 0, z: 0 },
-          length,
-        },
-      );
+      const Material = (() => {
+        switch (params.reset.type) {
+          case 'metallic':
+            return MetallicPendulumMaterial;
+          case 'hologram':
+            return HologramPendulumMaterial;
+          case 'random':
+            return Math.random() > 0.5
+              ? HologramPendulumMaterial
+              : MetallicPendulumMaterial;
+          default:
+            throw new Error('Invalid reset type');
+        }
+      })();
+      const pendulum = new Pendulum(new Material(), {
+        radius: radius - Math.max(radius * 0.02, 0.009),
+        position: { x, y: 0, z: 0 },
+        length,
+      });
       this.scene.add(pendulum.scene);
       return pendulum;
     });
