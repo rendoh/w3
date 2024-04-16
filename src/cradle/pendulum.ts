@@ -2,7 +2,7 @@ import RAPIER from '@dimforge/rapier3d-compat';
 import * as THREE from 'three';
 
 import { params } from '../gui';
-import collisionSound from './collision.mp3?url';
+import { PendulumMaterial } from './pendulum-materials/pendulum-material';
 import { world } from './world';
 
 type PendulumOptions = {
@@ -13,22 +13,21 @@ type PendulumOptions = {
 
 export class Pendulum {
   public readonly scene = new THREE.Scene();
-  private ballMesh: THREE.Mesh<
-    THREE.SphereGeometry,
-    THREE.MeshStandardMaterial
-  >;
+  private ballMesh: THREE.Mesh<THREE.SphereGeometry, THREE.Material>;
   private ballRigidBody: RAPIER.RigidBody;
   private fulcrumRigidBody: RAPIER.RigidBody;
   private lineMesh: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial>;
   private points: [THREE.Vector3, THREE.Vector3];
-  private audio = new Audio(collisionSound);
   public readonly collider: RAPIER.Collider;
 
-  constructor({
-    position = { x: 0, y: 0, z: 0 },
-    radius = 0.5,
-    length = 2,
-  }: PendulumOptions = {}) {
+  constructor(
+    private pendulumMaterial: PendulumMaterial,
+    {
+      position = { x: 0, y: 0, z: 0 },
+      radius = 0.5,
+      length = 2,
+    }: PendulumOptions = {},
+  ) {
     // 支点
     const fulcrumRigidBodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
       position.x,
@@ -74,16 +73,12 @@ export class Pendulum {
     this.fulcrumRigidBody = fulcrumRigidBody;
 
     this.ballMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(radius, 16, 16),
-      new THREE.MeshStandardMaterial({
-        color: 0xff0000,
-        roughness: 0.15,
-        metalness: 0.5,
-      }),
+      new THREE.SphereGeometry(radius, 32, 32),
+      this.pendulumMaterial.material,
     );
     this.scene.add(this.ballMesh);
     this.ballMesh.castShadow = true;
-    this.ballMesh.receiveShadow = true;
+    this.ballMesh.receiveShadow = this.pendulumMaterial.receiveShadow;
 
     const lineMaterial = new THREE.LineBasicMaterial({
       color: 0x666666,
@@ -96,8 +91,6 @@ export class Pendulum {
     this.lineMesh = new THREE.Line(geometry, lineMaterial);
     this.scene.add(this.lineMesh);
     this.lineMesh.castShadow = true;
-
-    this.audio.volume = 0.1;
   }
 
   public applyImpulse(impulse: number) {
@@ -117,10 +110,11 @@ export class Pendulum {
     this.ballMesh.quaternion.copy(this.ballRigidBody.rotation());
     this.points[1].copy(position);
     this.lineMesh.geometry.setFromPoints(this.points);
+    this.pendulumMaterial.update();
   }
 
   public dispose() {
-    this.ballMesh.material.dispose();
+    this.pendulumMaterial.dispose();
     this.ballMesh.geometry.dispose();
     this.lineMesh.material.dispose();
     this.lineMesh.geometry.dispose();
@@ -134,9 +128,12 @@ export class Pendulum {
   }
   public playCollisionSound(force: number) {
     const v = force / this.ballRigidBody.mass();
-    if (!params.sound.enabled) return;
-    this.audio.currentTime = 0;
-    this.audio.volume = Math.min(v / 400, 1);
-    this.audio.play();
+    const strength = Math.min(v / 400, 1);
+    this.pendulumMaterial.onContact(strength);
+    if (params.sound.muted) return;
+    const { audio } = this.pendulumMaterial;
+    audio.currentTime = 0;
+    audio.volume = strength;
+    audio.play();
   }
 }

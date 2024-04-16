@@ -1,7 +1,10 @@
 import * as THREE from 'three';
 
+import { params } from '../gui';
 import { range } from '../utils';
-import { HologramPendulum as Pendulum } from './hologram-pendulum';
+import { Pendulum } from './pendulum';
+import { HologramPendulumMaterial } from './pendulum-materials/hologram-pendulum-material';
+import { MetallicPendulumMaterial } from './pendulum-materials/metallic-pendulum-material';
 import { world } from './world';
 
 type CradleOptions = {
@@ -18,11 +21,16 @@ export class Cradle {
   constructor({ radius, length, count }: CradleOptions) {
     this.pendulumns = [...range(0, count)].map((i) => {
       const x = i * radius * 2 - radius * (count - 1);
-      const pendulum = new Pendulum({
-        radius: radius - Math.max(radius * 0.02, 0.009),
-        position: { x, y: 0, z: 0 },
-        length,
-      });
+      const pendulum = new Pendulum(
+        params.reset.type === 'metallic'
+          ? new MetallicPendulumMaterial()
+          : new HologramPendulumMaterial(),
+        {
+          radius: radius - Math.max(radius * 0.02, 0.009),
+          position: { x, y: 0, z: 0 },
+          length,
+        },
+      );
       this.scene.add(pendulum.scene);
       return pendulum;
     });

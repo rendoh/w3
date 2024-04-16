@@ -33,10 +33,10 @@ class App {
   }
 
   private addLights() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
     this.scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
     directionalLight.castShadow = true;
     directionalLight.position.set(3, 3, 3);
     this.scene.add(directionalLight);
